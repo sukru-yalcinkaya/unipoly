@@ -1,0 +1,806 @@
+invo:=function(G)
+# returns an involution produced from a random element in the group G.
+# We assume that the distribution of the elements of even order in the group G
+# is pretty high, which is the case for Lie type groups of odd characteristic.
+
+local seek, g;
+
+seek:=false;
+	while not seek do
+		g:=PseudoRandom(G);
+			if Order(g) mod 2 = 0 then
+				return g^(Order(g)/2);
+			else
+				seek:=false;
+			fi;
+	od;
+end;
+######################################################
+######################################################
+######################################################
+cent:=function(t,G)
+# Here, "G" is a group and "t" is an involution in "G".
+# This function returns some generators of the centralizer
+# of "t" in "G", "C_G(t)", by using only the map "zeta_1".
+
+local l,seek,i,j,x,y,o;
+
+l:=[];
+	for i in [1..40] do
+		seek:=false;
+			while not seek do
+				x:=PseudoRandom(G);
+				y:=t*t^x;
+				o:=Order(y);
+					if o mod 2 = 1 then
+						l[i]:=(y^((o+1)/2))*x^(-1);
+						seek:=true;
+					else
+						seek:=false;
+					fi;
+			od;
+	od;
+return l;
+end;
+######################################################
+######################################################
+######################################################
+permij:=function(l,i,j)
+# Here, the list "l" generates a group "PSL2" or "PGL2".
+# "i" and "j" are commuting involutions and this function
+# returns an element of order 3 in the normaliser of i,j,i*j.
+
+local g1,g2,g3,g,h1,h2,h3,o1,finished,t1,y1,f1,o2,z1,u1,x;
+
+#k:=1;
+x:=Group(l);
+g1:=i;
+g2:=j;
+g3:=i*j;
+finished:=false;
+	while not finished do
+		g:=PseudoRandom(x);
+		h1:=g1^g;
+		h2:=g2^g;
+		h3:=g3^g;
+		o1:=Order(g1*h2);
+			if o1 mod 2 = 0 then
+				finished:=false;
+			else
+				t1:=g1*h2;
+				y1:=t1^((o1+1)/2);
+				f1:=g3^(g*(y1^-1));
+				o2:=Order(g2*f1);
+					if o2 mod 2 = 0 then
+						finished:=false;
+					else
+						finished:=true;
+						z1:=g2*f1;
+						u1:=z1^((o2+1)/2);
+					fi;
+			fi;
+#		k:=k+1;
+	od;
+return (g*(y1^-1)*(u1^-1));
+end;
+############################
+############################
+############################
+unipotency:=function(s,i,j)
+# Here "s" is a list of generators of the group PGL(2,q)=SO(3,q), "q" odd, and
+# "i" and "j" are involutions.
+# This function returns the truth value whether the product "i*j" is a
+# unipotent element or not.
+
+local id,u,x,ci,found,ti;
+
+id:=i^2;
+u:=i*j;
+x:=Group(s);
+ci:=Group(cent(i,x));
+found:=false;
+	while not found do
+		ti:=PseudoRandom(ci);
+			if (ti<>id) and (ti^2<>id) and (ti^3<>id) then
+				found:=true;
+			fi;
+	od;
+	if (u<>u^ti) and ((u*(u^ti)*(u^-1))*((u^ti)^-1)=id) and (u<>id) and (u^2<>id) then
+		return true;
+	else
+		return false;
+	fi;
+end;
+############################
+############################
+############################
+reif:=function(l,i,j)
+# Here, "l" is a list of generators for PGL(2,q)=SO(3,q), q odd.
+# "i" and "j" are commuting involutions.
+# If there exists an involution commuting with "i" and "j", it returns [false,g], where
+# "g" is the desired involution commuting with both "i" and "j".
+# Otherwise, the product "i*j" is unipotent and it returns the list [true, i,j,i*j].
+
+local x,o,z,r,vi,ci,lll,count,g,R,T,r1,r2,r3,t1,t2,t3,g2,h2,o2,z2,ll,dill,found,oo,k;
+
+#########
+# We first check for unipotency. If fails, then we are sure that the desired involution
+# exists and we start the procedure constructing it.
+#########
+	if unipotency(l,i,j) then
+		return [true,i,j,i*j];
+	else
+		x:=Group(l);
+		o:=Order(i*j);
+			if o mod 2 = 0 then
+				return [false,(i*j)^(o/2)];
+			else
+				r:=i*j;
+				vi:=cent(i,x);
+				ci:=Group(vi);
+				lll:=[];
+				count:=1;
+					while count <= 20 do
+						g:=PseudoRandom(ci);
+							if Order(g) >= 4 then
+								lll[count]:=g;
+								count:=count+1;
+							fi;
+					od;
+				R:=Group(r);
+				T:=Group(lll);
+				ll:=[];
+########
+# For the construction of the centralizer of the desired involution, we use
+# the word ”w1*z1*w2*z2*w3*z3” where z1, z2, z3 are from the group R and w1, w2, w3
+# are from the group T.
+########
+					for k in [1..50] do
+						r1:=PseudoRandom(R);
+						r2:=PseudoRandom(R);
+						r3:=PseudoRandom(R);
+						t1:=PseudoRandom(T);
+						t2:=PseudoRandom(T); 
+						t3:=PseudoRandom(T);
+						g2:=r1*t1*r2*t2*r3*t3;
+						h2:=(r1*(t1^-1)*r2*(t2^-1)*r3*(t3^-1))*((t3^-1)*(r3^-1)*(t2^-1)*(r2^-1)*(t1^-1)*(r1^-1));
+						o2:=Order(h2);
+							if o2 mod 2 = 0 then
+								z2:=h2^(o2/2);
+							else
+								z2:=(h2^((o2+1)/2))*g2;
+							fi;
+						ll[k]:=z2;
+					od;
+				dill:=Group(ll);
+#######
+# Now, we try to locate the central involution in the centre of the centralizer
+# of the desired involution.
+#######
+				found:=false;
+					while not found do
+						g:=PseudoRandom(dill);
+						oo:=Order(g);
+							if (oo mod 2 = 0) and (oo>=4) then
+								g:=g^(oo/2);
+									if (g*i=i*g) and (g*j=j*g) then
+										return [false,g];
+									fi;
+							fi;
+					od;
+			fi;
+	fi;
+end;
+############################
+############################
+############################
+inter:=function(l,i1,i2,j1,j2)
+# Here, "l" is a list of generators for PGL(2,q), q odd.
+# The function constructs the intersection of the lines passing thru "i1,i2" and "j1,j2".
+# If one of the products "i1*i2" and "j1*j2" is unipotent, then we are in the situation of
+# constructing a parabolic line, namely a unipotent element in the group and
+# we return this unipotent element.
+
+local z1,z2;
+
+z1:=reif(l,i1,i2);
+if z1[1]=true then
+   return z1;
+fi;
+z2:=reif(l,j1,j2);
+if z2[1]=true then
+   return z2;
+fi;
+return reif(l,z1[2],z2[2]);
+end;
+############################
+############################
+############################
+midpoint:=function(s,i1,j1,k1,ti1,sc)
+# Here, "s" is a list of generators for PGL(2,q), q odd.
+# "i1", "j1" and "k1" determines a basis triangle for the projective geometry.
+# "ti1" is a pseudo involution whose square is "i1"
+# "sc" is an element of order 3 permuting "i1", "j1" and "k1".
+# This function returns unity element on the lines "j1vk1", "i1vk1" and "i1vj1" respectively.
+# If we end up constructing a unipotent element along the way, we return it.
+
+local N,lli,llj,llk,i,j,k,g,found,gi,gj,gk,x1,y1,id,tj1;
+
+id:=ti1^4;
+N:=[id, ti1, ti1^2, ti1^3, j1, ti1*j1, (ti1^2)*j1, (ti1^3)*j1, sc, ti1*sc, (ti1^2)*sc, (ti1^3)*sc, j1*sc, ti1*j1*sc, (ti1^2)*j1*sc, (ti1^3)*j1*sc,   sc^2,  ti1*sc^2, (ti1^2)*sc^2, (ti1^3)*sc^2, j1*sc^2, ti1*j1*sc^2, (ti1^2)*j1*sc^2,(ti1^3)*j1*sc^2 ];
+lli:=[];
+llj:=[];
+llk:=[];
+i:=1;
+j:=1;
+k:=1;
+	for g in N do
+		if (Order(g)=2) and (j1^g=k1) then
+			lli[i]:=g;
+			i:=i+1;
+		fi;
+	od;
+	for g in N do
+		if (Order(g)=2) and (i1^g=k1) then
+			llj[j]:=g;
+			j:=j+1;
+		fi;
+	od;
+	for g in N do
+		if (Order(g)=2) and (i1^g=j1) then
+			llk[k]:=g;
+			k:=k+1;
+		fi;
+	od;
+found:=false;
+	for gi in lli do
+		for gj in llj do
+			for gk in llk do
+				x1:=inter(s,i1,gi,j1,gj);
+					if x1[1]=true then
+						return x1;
+					fi;
+				y1:=inter(s,i1,gi,k1,gk);
+					if y1[1]=true then
+						return y1;
+					elif
+						x1[2]=y1[2] then
+						return [false,gi,gj,gk];
+					fi;
+			od;
+		od;
+	od;
+end;
+############################
+############################
+############################
+add:=function(l,mid,i1,j1,k1,a,b)
+# Here, "s" is a list of generators for PGL(2,q), q odd.
+# "i1", "j1" and "k1" determines a basis triangle for the projective geometry.
+# "mid" is the midpoint of the triangle "i1", "j1" and "k1", that is, the point
+# corresponding to [1,1,1].
+# "a" and "b" are two points on the axis "j1 v k1". Here, "j1=0", "k1=\infty".
+# This function returns "a+b" on the axis "j1 v k1".
+
+local aprime,bprime,ab,se;
+
+aprime:=inter(l,i1,a,mid,k1);
+	if aprime[1]=true then
+		return aprime;
+	fi;
+se:=inter(l,mid,k1,i1,j1);
+	if se[1]=true then
+		return se;
+	fi;
+bprime:=inter(l,i1,k1,b,se[2]);
+	if bprime[1]=true then
+		return bprime;
+	fi;
+ab:=inter(l,j1,k1,aprime[2],bprime[2]);
+	if ab[1]=true then
+		return ab;
+	else
+		return ab;
+	fi;
+end;
+###################
+###################
+###################
+mult:=function(l,mid,i1,j1,k1,a,b)
+# Here, "s" is a list of generators for PGL(2,q), q odd.
+# "i1", "j1" and "k1" determines a basis triangle for the projective geometry.
+# "mid" is the midpoint of the triangle "i1", "j1" and "k1", the point [1,1,1].
+# "a" and "b" are two points on the axis "j1 v k1". Here, "j1=0", "k1=\infty".
+# This function returns "a \times b" on the axis "j1 v k1".
+
+local aprime,bprime,ab;
+
+aprime:=inter(l,i1,a,j1,mid);
+	if aprime[1]=true then
+		return aprime;
+	fi;
+bprime:=inter(l,b,mid,i1,k1);
+	if bprime[1]=true then
+		return bprime;
+	fi;
+ab:=inter(l,aprime[2],bprime[2],j1,k1);
+return ab;
+end;
+########################
+########################
+########################
+log2:=function(n)
+# returns a list consisting of natural numbers corresponding to the
+# representation of a natural number "n" in base 2.
+
+local stop,i,l,finished,j,k,a;
+
+l:=[];
+stop:=false;
+finished:=false;
+i:=0;
+	while not stop do
+		if 2^i=n then
+			stop:=true;
+			finished:=true;
+		elif  2^i > n then
+			stop:=true;
+			i:=i-1;
+		else
+			i:=i+1;
+		fi;
+	od;
+l[1]:=i;
+n:=n-2^i;
+k:=2;
+	while not finished do
+		stop:=false;
+		j:=1;
+			while not stop do
+				a:=2^(i-j);
+					if a = n then
+						stop:=true;
+						finished:=true;
+						l[k]:=i-j;
+					elif a > n then
+						stop:=false;
+						j:=j+1;
+					else
+						stop:=true;
+						l[k]:=i-j;
+						i:=i-j;
+						k:=k+1;
+						n:=n-a;
+					fi;
+			od;
+	od;
+return l;
+end;
+########################
+########################
+########################
+sumo:=function(s,mid,i1,j1,k1,di1,l)
+
+# Here, "s" is a list of generators for PGL(2,q), q odd.
+# "i1", "j1" and "k1" determines a basis triangle for the projective geometry.
+# "mid" is the midpoint of the triangle "i1", "j1" and "k1".
+# "l" is a list of natural numbers corresponding to the binary representation of
+# a natural number "n" and this function returns a value "n" on the axis "j1 v k1".
+
+local M,0in,x,k,i,y,f,ll;
+
+M:=Maximum(l);
+	if 0 in l then
+		0in:=true;
+	else
+		0in:=false;
+	fi;
+ll:=[];
+x:=di1;
+k:=1;
+	for i in [1..M] do
+		Print("Computing 2^",i,".\n");
+			if i in l then
+				x:=add(s,mid,i1,j1,k1,x,x);
+					if x[1]=true then
+						return x;
+					else
+						x:=x[2];
+					fi;
+				ll[k]:=x;
+				k:=k+1;
+			else
+				x:=add(s,mid,i1,j1,k1,x,x);
+					if x[1]=true then
+						return x;
+					else
+						x:=x[2];
+					fi;
+			fi;
+	od;
+Print("Now, we are adding the corresponding powers up.\n");
+	if Length(ll)=0 then
+		return di1;
+	else
+		y:=ll[1];
+			for f in [2..(k-1)] do
+				y:=add(s,mid,i1,j1,k1,y,ll[f]);
+					if y[1]=true then
+						return y;
+					else
+						y:=y[2];
+					fi;
+			od;
+	fi;
+	if 0in=true then
+		return add(s,mid,i1,j1,k1,y,di1);
+	else
+		return [false,y];
+	fi;
+end;
+##############################
+##############################
+##############################
+toshn:=function(a,p)
+# finds a square root of "a" in a field of prime size "p", "p" odd.
+# This is an implementation of well-known Tonelli-Shanks algorithm.
+
+local L,i,finished,e,s,found,n,x,b,g,r,m,finished2;
+
+L:=p-1;
+i:=0;
+finished:=false;
+	while not finished do
+		if L mod 2 = 0 then
+			L:=L/2;
+			i:=i+1;
+		else
+			finished:=true;
+		fi;
+	od;
+L:=p-1;
+e:=i;
+s:=L/(2^e);
+found:=false;
+n:=2;
+	while not found do
+		if Legendre(n,p)=-1 then
+			found:=true;
+		else
+			found:=false;
+			n:=n+1;
+		fi;
+	od;
+x:=a^((s+1)/2) mod p;
+b:=a^s mod p;
+g:=n^s mod p;
+r:=e;
+finished:=false;
+	while not finished do
+		m:=0;
+		finished2:=false;
+			while not finished2 do
+				if b^(2^m) mod p = 1 then
+					finished2:=true;
+				else
+					m:=m+1;
+				fi;
+			od;
+			if m=0 then
+				return x;
+			else
+				x:=x*(g^(2^(r-m-1))) mod p;
+				b:=b*(g^(2^(r-m)));
+				g:=g^(2^(r-m));
+				r:=m;
+			fi;
+	od;
+end;
+##############################
+##############################
+##############################
+unip:=function(s,p)
+# Here, "s" is a list of generators for PGL(2,p^k), "p" odd, "k" unknown.
+# This function returns a list “l”
+# l[1] is a truth value whether it succeeds to produce unipotent element.
+# l[2] and l[3] are two involutions whose product is a unipotent element.
+# l[4] is a unipotent element which is the product of l[2] and l[3].
+
+
+local x, found1,i1,ci1,found2,count,ti1,oi1,j1,cj1,tj1,oj1,k1,sc,m,di1,dj1,dk1,mid,n,L, Co,found,c,L1,L2,M1,M2,cc;
+
+#####
+#First we find the coordinates of the unipotents.
+#####
+	if p mod 4 = 1 then
+		Co:=toshn(p-1,p);
+			if Co > p-Co then
+				Co:=p-Co;
+			fi;
+	else
+		Co:=[];
+		found:=false;
+		c:=4;
+			while not found do
+				if Legendre(-1-c^2,p)=1 then
+					cc:=toshn(-1-c^2,p);
+						if cc > p-cc then
+							cc:=p-cc;
+						fi;
+					Co:=[c,cc];
+					found:=true;
+				else
+					c:=c+1;
+				fi;
+			od;
+	fi;
+####
+#  Coordinates found!
+####
+####
+# Constructing a basis of the projective geometry
+####
+x:=Group(s);
+found1:=false;
+	while not found1 do
+		i1:=invo(x);
+		ci1:=Group(cent(i1,x));
+		found2:=false;
+		count:=1;
+			while (not found2) and (count<=20) do
+				ti1:=PseudoRandom(ci1);
+				oi1:=Order(ti1);
+					if oi1 mod 4 = 0 then
+						found2:=true;
+						found1:=true;
+					else
+						count:=count+1;
+					fi;
+			od;
+	od;
+found1:=false;
+	while not found1 do
+		j1:=invo(ci1);
+			if j1<>i1 then
+				cj1:=Group(cent(j1,x));
+				found2:=false;
+				count:=1;
+					while (not found2) and (count <=20) do
+						tj1:=PseudoRandom(cj1);
+						oj1:=Order(tj1);
+							if oj1 mod 4 = 0 then
+								found2:=true;
+								found1:=true;
+							else
+								count:=count+1;
+							fi;
+					od;
+			else
+				found1:=false;
+			fi;
+	od;
+k1:=i1*j1;
+####
+# Involutions of right type have been found.
+Print("Involutions of right type have been found.\n");
+####
+sc:=permij(s,i1,j1);;
+sc:=sc^2;
+ti1:=ti1^(oi1/4);
+####
+# Upto here, everything is characteristic free but now we have to separate \pm 1 mod 4.
+####
+	if p=3 then
+		return midpoint(s,i1,j1,k1,ti1,sc);
+	elif p mod 4 = 1 then
+		m:=midpoint(s,i1,j1,k1,ti1,sc);
+			if m[1]=true then
+				return m;
+			else
+				di1:=m[2];
+				dj1:=m[3];
+				dk1:=m[4];
+			fi;
+		mid:=inter(s,i1,di1,j1,dj1);
+			if mid[1]=true then
+				return mid;
+			else
+				mid:=mid[2];
+			fi;
+		Print("The point (1,1,1) has been constructed.\n");
+		L:=log2(Co);
+		Print("The binary representation of ",Co," involves the following powers of 2:");
+		Print(" ", L,".\n");
+###
+# The unipotent element will be the following:
+###
+		return sumo(s,mid,i1,j1,k1,di1,L);
+	else
+		m:=midpoint(s,i1,j1,k1,ti1,sc);
+			if m[1]=true then
+				return m;
+			else
+				di1:=m[2];
+				dj1:=m[3];
+				dk1:=m[4];
+			fi;
+		mid:=inter(s,i1,di1,j1,dj1);
+			if mid[1]=true then
+				return mid;
+			else
+				mid:=mid[2];
+			fi;
+		Print("The point (1,1,1) has been constructed.\n");
+		L1:=log2(Co[1]);
+		L2:=log2(Co[2]);
+		Print("A coordinate of a unipotent is (", Co[1],",",Co[2],",",1, ").\n");
+		M1:=sumo(s,mid,i1,j1,k1,di1,L1);
+			if M1[1]=true then
+				return M1;
+			else
+				M1:=M1[2];
+			fi;
+		Print("The point ", Co[1], " is constructed.\n");
+		M2:=sumo(s,mid,k1,j1,i1,dk1,L2);
+			if M2[1]=true then
+				return M2;
+			else
+				M2:=M2[2];
+			fi;
+		Print("The point ", Co[2], " is constructed.\n");
+###
+# The unipotent element will be the following:
+###
+		return inter(s,M1,i1,k1,M2);
+	fi;
+end;
+###################
+###################
+###################
+#THE REST OF THE CODE IS WRITTEN FOR UNKNOWN CHARACTERISTIC
+###################
+###################
+###################
+uni:=function(s)
+# "s" is a list of generators of G=PGL(2,q), "q" odd.
+# This function constructs a unipotent element and finds the characteristic of the 
+# underlying field in G.
+
+local x,found1,i1,ci1,found2,count,ti1,oi1,j1,cj1,tj1,oj1,k1,ck1,sc,m,di1,dj1,dk1,mid,res,i,finished,p,Co,found,c,cc,L1,L2,M1,M2,o;
+
+####
+# Constructing a basis of the projective geometry
+####
+x:=Group(s);
+found1:=false;
+	while not found1 do
+		i1:=invo(x);
+		ci1:=Group(cent(i1,x));
+		found2:=false;
+		count:=1;
+			while (not found2) and (count<=20) do
+				ti1:=PseudoRandom(ci1);
+				oi1:=Order(ti1);
+					if oi1 mod 4 = 0 then
+						found2:=true;
+						found1:=true;
+					else
+						count:=count+1;
+					fi;
+			od;
+	od;
+found1:=false;
+	while not found1 do
+		j1:=invo(ci1);
+			if j1<>i1 then
+				cj1:=Group(cent(j1,x));
+				found2:=false;
+				count:=1;
+					while (not found2) and (count <=20) do
+						tj1:=PseudoRandom(cj1);
+						oj1:=Order(tj1);
+							if oj1 mod 4 = 0 then
+								found2:=true;
+								found1:=true;
+							else
+								count:=count+1;
+							fi;
+					od;
+			else
+				found1:=false;
+			fi;
+	od;
+k1:=i1*j1;
+ck1:=Group(cent(k1,x));
+####
+Print("Involutions of right type have been found.\n");
+####
+sc:=permij(s,i1,j1);;
+sc:=sc^2;
+ti1:=ti1^(oi1/4);
+m:=midpoint(s,i1,j1,k1,ti1,sc);
+	if m[1]=true then
+		return m;
+	else
+		di1:=m[2];
+		dj1:=m[3];
+		dk1:=m[4];
+	fi;
+mid:=inter(s,i1,di1,j1,dj1);
+	if mid[1]=true then
+		Print("The characteristic is 3.\n");
+		return mid;
+	else
+		Print("The point (1,1,1) has been constructed.\n");
+		mid:=mid[2];
+	fi;
+Print("This is the ",2," nd step.\n");
+res:=add(s,mid,i1,j1,k1,di1,di1);
+	if res[1]=true then 
+		Print("The characteristic is ", 5, ".\n");
+		return res;
+	else
+		res:=res[2];
+	fi;
+i:=3;
+finished:=false;
+	while not finished do
+		Print("This is the ",i," th step.\n");
+		res:=add(s,mid,i1,j1,k1,res,di1);
+			if res[1]=true then
+				Print("A unipotent element is constructed.\n");
+				o:=Order(res[4]);
+				Print("The characteristic of the underlying field is ",o, ".\n");
+				return res;
+			elif res[2]=j1 then
+				Print("The characteristic of the underlying field is ", i, ".\n");
+				p:=i;
+				Print("Now, we are constructing a unipotent element.\n");
+#####
+#First we find the coordinates of the unipotents.
+#####
+				Co:=[];
+				found:=false;
+				c:=4;
+					while not found do
+						if Legendre(-1-c^2,p)=1 then
+							cc:=toshn(-1-c^2,p);
+								if cc > p-cc then
+									cc:=p-cc;
+								fi;
+							Co:=[c,cc];
+							found:=true;
+						else
+							c:=c+1;
+						fi;
+					od;
+####
+# Coordinates found!
+####
+				L1:=log2(Co[1]);
+				L2:=log2(Co[2]);
+				Print("A coordinate of a unipotent is (", Co[1],",",Co[2],",",1, ").\n");
+				M1:=sumo(s,mid,i1,j1,k1,di1,L1);
+					if M1[1]=true then
+						return M1;
+					else
+						M1:=M1[2];
+					fi;
+				Print("The point ", Co[1], " is constructed.\n");
+				M2:=sumo(s,mid,k1,j1,i1,dk1,L2);
+					if M2[1]=true then
+						return M2;
+					else
+						M2:=M2[2];
+					fi;
+				Print("The point ", Co[2], " is constructed.\n");
+###
+# The unipotent element will be the following:
+###
+				return inter(s,M1,i1,k1,M2);
+			else
+				res:=res[2];
+				i:=i+1;
+			fi;
+	od;
+end;
