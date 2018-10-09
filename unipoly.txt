@@ -462,68 +462,6 @@ end;
 ################################################################################
 ################################################################################
 ################################################################################
-sumo:=function(s,mid,i1,j1,k1,di1,l,Eo)
-
-# Here, "s" is a list of generators for PGL(2,q), q odd.
-# "i1,j1,k1" are involutions determining a basis triangle for the projective geometry.
-# "mid" is the point corresponding to [1,1,1] in the triangle "i1,j1,k1".
-# "di1" is the unity element on the "j1 v k1" axis.
-# "l" is a list of natural numbers with which the 2-powers add up to a
-# natural number "n".
-# This function returns a value "n" on the axis "j1 v k1".
-
-local M,0in,x,k,i,y,f,ll;
-
-M:=Maximum(l);
-	if 0 in l then
-		0in:=true;
-	else
-		0in:=false;
-	fi;
-ll:=[];
-x:=di1;
-k:=1;
-	for i in [1..M] do
-			if i in l then
-				x:=add(s,mid,i1,j1,k1,x,x,Eo);
-					if x[1]=true then
-						return x;
-					else
-						x:=x[2];
-					fi;
-				ll[k]:=x;
-				k:=k+1;
-			else
-				x:=add(s,mid,i1,j1,k1,x,x,Eo);
-					if x[1]=true then
-						return x;
-					else
-						x:=x[2];
-					fi;
-			fi;
-	od;
-	if Length(ll)=0 then
-		return di1;
-	else
-		y:=ll[1];
-			for f in [2..(k-1)] do
-				y:=add(s,mid,i1,j1,k1,y,ll[f],Eo);
-					if y[1]=true then
-						return y;
-					else
-						y:=y[2];
-					fi;
-			od;
-	fi;
-	if 0in=true then
-		return add(s,mid,i1,j1,k1,y,di1,Eo);
-	else
-		return [false,y];
-	fi;
-end;
-################################################################################
-################################################################################
-################################################################################
 multo:=function(s,mid,i1,j1,k1,di1,a,l,Eo)
 
 # Here, "s" is a list of generators for PGL(2,q), q odd.
@@ -548,6 +486,7 @@ x:=a;
 k:=1;
 	for i in [1..M] do
 			if i in l then
+				#Print("This is for x^",i,".\n");
 				x:=mult(s,mid,i1,j1,k1,x,x,Eo);
 					if x[1]=true then
 						return x;
@@ -570,6 +509,7 @@ k:=1;
 	else
 		y:=ll[1];
 			for f in [2..(k-1)] do
+				#Print("Computing y^",f,".\n");
 				y:=mult(s,mid,i1,j1,k1,y,ll[f],Eo);
 					if y[1]=true then
 						return y;
@@ -587,524 +527,13 @@ end;
 ################################################################################
 ################################################################################
 ################################################################################
-toshn:=function(a,p)
-
-# finds a square root of "a" in a field of prime size "p", "p" odd.
-# This is an implementation of well-known Tonelli-Shanks algorithm.
-
-local L,i,finished,e,s,found,n,x,b,g,r,m,finished2;
-
-L:=p-1;
-i:=0;
-finished:=false;
-	while not finished do
-		if L mod 2 = 0 then
-			L:=L/2;
-			i:=i+1;
-		else
-			finished:=true;
-		fi;
-	od;
-L:=p-1;
-e:=i;
-s:=L/(2^e);
-found:=false;
-n:=2;
-	while not found do
-		if Legendre(n,p)=-1 then
-			found:=true;
-		else
-			found:=false;
-			n:=n+1;
-		fi;
-	od;
-x:=a^((s+1)/2) mod p;
-b:=a^s mod p;
-g:=n^s mod p;
-r:=e;
-finished:=false;
-	while not finished do
-		m:=0;
-		finished2:=false;
-			while not finished2 do
-				if b^(2^m) mod p = 1 then
-					finished2:=true;
-				else
-					m:=m+1;
-				fi;
-			od;
-
-			if m=0 then
-				return x;
-			else
-				x:=x*(g^(2^(r-m-1))) mod p;
-				b:=b*(g^(2^(r-m)));
-				g:=g^(2^(r-m));
-				r:=m;
-			fi;
-	od;
-end;
-################################################################################
-################################################################################
-################################################################################
-unip:=function(s,p,Eo)
-# Here, "s" is a list of generators for PGL(2,p^k), "p" odd, "k" unknown.
-# This function returns a list “l” where
-# l[1] is a truth value whether it succeeds to produce unipotent element.
-# l[2] and l[3] are two involutions whose product is a unipotent element.
-# l[4] is a unipotent element which is the product of l[2] and l[3].
-
-
-local x,id,found1,i1,ci1,found2,count,ti1,j1,cj1,tj1,oj1,k1,sc,m,di1,dj1,dk1,mid,n,L,Co,found,c,L1,L2,M1,M2,cc;
-
-#####
-#First, we find the coordinates of the unipotents.
-#####
-	if p mod 4 = 1 then
-		Co:=toshn(-1,p);
-			if Co > p-Co then
-				Co:=p-Co;
-			fi;
-	else
-		Co:=[];
-		found:=false;
-		c:=4;
-			while not found do
-				if Legendre(-1-c^2,p)=1 then
-					cc:=toshn(-1-c^2,p);
-						if cc > p-cc then
-							cc:=p-cc;
-						fi;
-					Co:=[c,cc];
-					found:=true;
-				else
-					c:=c+1;
-				fi;
-			od;
-	fi;
-####
-#  Coordinates found!
-Print("The coordinates of the unipotents are found.\n");
-####
-####
-# Constructing a basis of the projective geometry
-####
-x:=Group(s);
-id:=Identity(x);
-found1:=false;
-	while not found1 do
-		i1:=invo(x,Eo);
-		ci1:=Group(cent(i1,x,Eo));
-		found2:=false;
-		count:=1;
-			while (not found2) and (count<=20) do
-				ti1:=PseudoRandom(ci1);
-					if is4div(ti1,id,Eo) then
-						found2:=true;
-						found1:=true;
-					else
-						count:=count+1;
-					fi;
-			od;
-	od;
-found1:=false;
-	while not found1 do
-		j1:=invo(ci1,Eo);
-			if j1<>i1 then
-				cj1:=Group(cent(j1,x,Eo));
-				found2:=false;
-				count:=1;
-					while (not found2) and (count <=20) do
-						tj1:=PseudoRandom(cj1);
-							if is4div(tj1,id,Eo) then
-								found2:=true;
-								found1:=true;
-							else
-								count:=count+1;
-							fi;
-					od;
-			else
-				found1:=false;
-			fi;
-	od;
-k1:=i1*j1;
-####
-# Involutions of right type have been found.
-Print("Basis triangle for the projective plane is constructed..\n");
-####
-sc:=permij(s,i1,j1,Eo);;
-ti1:=eltor4(ti1,id,Eo);
-####
-# Upto here, everything is characteristic free but now we have to separate \pm 1 mod 4.
-####
-	if p=3 then
-		return unity(s,i1,j1,k1,ti1,sc);
-	elif p mod 4 = 1 then
-		m:=unity(s,i1,j1,k1,ti1,sc);
-		di1:=m[1];
-		dj1:=m[2];
-		dk1:=m[3];
-		mid:=inter(s,i1,di1,j1,dj1,Eo);
-			if mid[1]=true then
-				return mid;
-			else
-				mid:=mid[2];
-			fi;
-#		Print("The point (1,1,1) has been constructed.\n");
-		L:=log2(Co);
-#		Print("The binary representation of ",Co," involves the following powers of 2:");
-#		Print(" ", L,".\n");
-###
-# The unipotent element will be the following:
-###
-		return sumo(s,mid,i1,j1,k1,di1,L,Eo);
-	else
-		m:=unity(s,i1,j1,k1,ti1,sc);
-		di1:=m[1];
-		dj1:=m[2];
-		dk1:=m[3];
-		mid:=inter(s,i1,di1,j1,dj1,Eo);
-			if mid[1]=true then
-				return mid;
-			else
-				mid:=mid[2];
-			fi;
-#		Print("The point (1,1,1) has been constructed.\n");
-		L1:=log2(Co[1]);
-		L2:=log2(Co[2]);
-#		Print("A coordinate of a unipotent is (", Co[1],",",Co[2],",",1, ").\n");
-		M1:=sumo(s,mid,i1,j1,k1,di1,L1,Eo);
-			if M1[1]=true then
-				return M1;
-			else
-				M1:=M1[2];
-			fi;
-#		Print("The point ", Co[1], " is constructed.\n");
-		M2:=sumo(s,mid,k1,j1,i1,dk1,L2,Eo);
-			if M2[1]=true then
-				return M2;
-			else
-				M2:=M2[2];
-			fi;
-#		Print("The point ", Co[2], " is constructed.\n");
-###
-# The unipotent element will be the following:
-###
-		return inter(s,M1,i1,k1,M2,Eo);
-	fi;
-end;
-################################################################################
-################################################################################
-################################################################################
-##########                                                            ##########
-########## THE REST OF THE CODE IS WRITTEN FOR UNKNOWN CHARACTERISTIC ##########
-##########                                                            ##########
-################################################################################
-################################################################################
-################################################################################
-unibbf1:=function(s,E)
-# Here, "s" is a list of generators of "G=PGL(2,q)"", "q" odd, "q=1 mod 4".
-# "E" is an exponent for the group "G".
-# This function returns either a list “l” where
-# l[1] is a truth value whether it succeeds to produce unipotent element.
-# l[2] and l[3] are two involutions whose product is a unipotent element.
-# l[4] is a unipotent element which is the product of l[2] and l[3]; or
-# returns "false" in which case algorithm fails to produce unipotent element.
-
-local L,i,finished1,Ee,Eo,x,found1,i1,id,ci1,found2,count,ti1,j1,cj1,tj1,k1,sc,m,di1,dj1,dk1,mid,l,kk,finished2,t,uv;
-
-###############
-# Finding the odd and even part of the exponent "E".
-###############
-L:=E;
-i:=0;
-finished1:=false;
-	while not finished1 do
-		if L mod 2 = 0 then
-			L:=L/2;
-			i:=i+1;
-		else
-			finished1:=true;
-		fi;
-	od;
-Ee:=i;
-Eo:=E/(2^Ee);
-##############
-# Exponent is decomposed into odd and even part.
-##############
-
-####
-# Constructing a basis of the projective geometry
-####
-x:=Group(s);
-id:=Identity(x);
-found1:=false;
-	while not found1 do
-		i1:=invo(x,Eo);
-		ci1:=Group(cent(i1,x,Eo));
-		found2:=false;
-		count:=1;
-			while (not found2) and (count<=20) do
-				ti1:=PseudoRandom(ci1);
-					if is4div(ti1,id,Eo) then
-						found2:=true;
-						found1:=true;
-					else
-						count:=count+1;
-					fi;
-			od;
-	od;
-found1:=false;
-	while not found1 do
-		j1:=invo(ci1,Eo);
-			if j1<>i1 then
-				cj1:=Group(cent(j1,x,Eo));
-				found2:=false;
-				count:=1;
-					while (not found2) and (count <=20) do
-						tj1:=PseudoRandom(cj1);
-							if is4div(tj1,id,Eo) then
-								found2:=true;
-								found1:=true;
-							else
-								count:=count+1;
-							fi;
-					od;
-			else
-				found1:=false;
-			fi;
-	od;
-k1:=i1*j1;
-####
-Print("Basis triangle for the projective plane is constructed.\n");
-####
-sc:=permij(s,i1,j1,Eo);;
-m:=unity(s,i1,j1,k1,eltor4(ti1,id,Eo),sc);
-di1:=m[1];
-dj1:=m[2];
-dk1:=m[3];
-mid:=inter(s,i1,di1,j1,dj1,Eo);
-	if mid[1]=true then
-		Print("The characteristic is 3.\n");
-		return mid;
-	else
-		mid:=mid[2];
-	fi;
-#Print("Black box field is constructed.\n");
-l:=log2(Eo);;
-kk:=2;
-finished1:=false;
-finished2:=false;
-	while not finished1 and kk<=7 do
-		found1:=false;
-			while not found1 do
-				t:=PseudoRandom(ci1);
-					if (t^2=id) and (t<>i1) and (t<>j1) and (t<>k1) then
-						found1:=true;
-					fi;
-			od;
-		Print("Checking whether a random black box field element has multiplicative order divisible by 4.\n");
-		finished2:=false;
-			while not finished2 do
-				uv:=multo(s,mid,i1,j1,k1,di1,t,l,Eo);;
-					if uv[1]=true then
-						return uv;
-					else
-							uv:=uv[2];
-					fi;
-#				Print("Odd power is killed.\n");
-					if uv=di1 then
-						finished2:=true;
-						kk:=kk+1;
-						Print("Unfortunately, 4 does not divide the order of this black box field element.\n");
-					else
-						i:=1;
-							while i<=Ee and (not finished2) do
-#								Print("Started the loop to kill to 2-part.\n");
-								uv:=mult(s,mid,i1,j1,k1,uv,uv,Eo);
-									if uv[1]=true then
-										return uv;
-									else
-											uv:=uv[2];
-									fi;
-									if uv=di1 then
-										finished2:=true;
-										kk:=kk+1;
-										Print("Unfortunately, 4 does not divide the order of this black box field element.\n");
-									else
-										i:=i+1;
-									fi;
-							od;
-					fi;
-			od;
-	od;
-	if kk=8 then
-		Print("Run the algorithm again, it failed to produce unipotent element.\n");
-		return false;
-	fi;
-	end;
-################################################################################
-################################################################################
-################################################################################
-unibbf2:=function(s,E)
-# "s" is a list of generators of G=PGL(2,q), "q" odd, "q=-1 mod 4".
-# "E" is an exponent for "G".
-# This function returns a list “l” where
-# l[1] is a truth value whether it succeeds to produce unipotent element.
-# l[2] and l[3] are two involutions whose product is a unipotent element.
-# l[4] is a unipotent element which is the product of l[2] and l[3].
-
-local L,i,finished1,Ee,Eo,x,id,found1,i1,ci1,found2,count,ti1,j1,cj1,tj1,k1,sc,m,di1,dj1,dk1,mid,l,nn,t1,t2,tt1,tt2,tt3,ss,sqrttt3,x1,x2,candi;
-
-###############
-# Finding the odd and even part of the exponent "E".
-###############
-L:=E;
-i:=0;
-finished1:=false;
-	while not finished1 do
-		if L mod 2 = 0 then
-			L:=L/2;
-			i:=i+1;
-		else
-			finished1:=true;
-		fi;
-	od;
-Ee:=i;
-Eo:=E/(2^Ee);
-##############
-# Exponent is decomposed into odd and even part.
-##############
-####
-# Constructing a basis of the projective geometry
-####
-x:=Group(s);
-id:=Identity(x);
-found1:=false;
-	while not found1 do
-		i1:=invo(x,Eo);
-		ci1:=Group(cent(i1,x,Eo));
-		found2:=false;
-		count:=1;
-			while (not found2) and (count<=20) do
-				ti1:=PseudoRandom(ci1);
-					if is4div(ti1,id,Eo) then
-						found2:=true;
-						found1:=true;
-					else
-						count:=count+1;
-					fi;
-			od;
-	od;
-found1:=false;
-	while not found1 do
-		j1:=invo(ci1,Eo);
-			if j1<>i1 then
-				cj1:=Group(cent(j1,x,Eo));
-				found2:=false;
-				count:=1;
-					while (not found2) and (count <=20) do
-						tj1:=PseudoRandom(cj1);
-							if is4div(tj1,id,Eo) then
-								found2:=true;
-								found1:=true;
-							else
-								count:=count+1;
-							fi;
-					od;
-			else
-				found1:=false;
-			fi;
-	od;
-k1:=i1*j1;
-####
-Print("Basis triangle for the projective plane is constructed.\n");
-####
-sc:=permij(s,i1,j1,Eo);;
-ti1:=eltor4(ti1,id,Eo);
-m:=unity(s,i1,j1,k1,ti1,sc);
-di1:=m[1];
-dj1:=m[2];
-dk1:=m[3];
-mid:=inter(s,i1,di1,j1,dj1,Eo);
-	if mid[1]=true then
-		Print("The characteristic is 3.\n");
-		return mid;
-	else
-		mid:=mid[2];
-	fi;
-l:=log2(Eo);;
-nn:=log2((Eo+1)/2);
-finished1:=false;
-	while not finished1 do
-		found1:=false;
-			while not found1 do
-				t1:=PseudoRandom(ci1);
-					if ((t1^2=id) and (t1<>i1) and (t1<>j1) and (t1<>k1)) then
-						found1:=true;
-					fi;
-			od;
-		found1:=false;
-			while not found1 do
-				t2:=PseudoRandom(ci1);
-					if (t2<>t1) and (t2^2=id) and (t2<>i1) and (t2<>j1) and (t2<>k1) then
-						found1:=true;
-					fi;
-			od;
-		Print("Checking whether -x^2-y^2 is of odd order for random x & y in K^*.\n");
-		tt1:=mult(s,mid,i1,j1,k1,t1,t1,Eo);
-			if tt1[1]=true then
-				return tt1;
-			fi;
-		tt2:=mult(s,mid,i1,j1,k1,t2,t2,Eo);
-			if tt2[1]=true then
-				return tt2;
-			fi;
-		tt3:=add(s,mid,i1,j1,k1,tt1[2]^j1,tt2[2]^j1,Eo);
-			if tt3[1]=true then
-				return tt3;
-			fi;
-		ss:=multo(s,mid,i1,j1,k1,di1,tt3[2],l,Eo);
-			if ss[1]=true then
-				return ss;
-			elif ss[2]=di1 then
-				finished1:=true;
-				sqrttt3:=multo(s,mid,i1,j1,k1,di1,tt3[2],nn,Eo);
-					if sqrttt3[1]=true then
-						return sqrttt3;
-					fi;
-				x1:=mult(s,mid,i1,j1,k1,t1,sqrttt3[2]^di1,Eo);
-					if x1[1]=true then
-						return x1;
-					fi;
-				x1:=x1[2];
-				x2:=mult(s,mid,i1,j1,k1,t2,sqrttt3[2]^di1,Eo);
-					if x2[1]=true then
-						return x2;
-					fi;
-				x2:=x2[2]^dj1;
-				candi:=inter(s,i1,x1,k1,x2,Eo);
-					if candi[1]=true then
-#							Print("Enforced serendipity is accomplished!\n");
-						return candi;
-					else
-						Print("Run the algorithm again, it failed to produce unipotent element.\n");
-					fi;
-			else
-				Print("No, it is not of odd order.\n");
-			fi;
-	od;
-end;
-################################################################################
-################################################################################
-################################################################################
 unipoly:=function(s,E)
 # This function is a combination of the functions "unibbf1" and "unibbf2" above.
 # It first runs unibbf1 and if it succeeds to construct a unipotent element, then
 # we are done. If it fails to construct an element of order 4 in the black box
 # field
 
-local L,i,finished1,Ee,Eo,x,id,i1,ci1,found,count,ti1,j1,cj1,tj1,k1,sc,m,di1,dj1,mid,a2,l,nn,kk,finished2,t,uv,t1,t2,tt1,tt2,tt3,ss,sqrttt3,x1,x2,candi;
+local L,i,finished1,Ee,Eo,x,id,i1,ci1,found,count,ti1,j1,cj1,tj1,k1,sc,m,di1,dj1,mid,a2,l,nn,finished,t1,t2,tt1,tt2,tt3,ss,sqrttt3,x1,x2,candi;
 ###############
 # Finding the odd and even part of the exponent "E".
 ###############
@@ -1167,7 +596,7 @@ finished1:=false;
 	od;
 k1:=i1*j1;
 ####################
-Print("Basis triangle for the projective plane is constructed.\n");
+#Print("Basis triangle for the projective plane is constructed.\n");
 ####################
 sc:=permij(s,i1,j1,Eo);;
 ti1:=eltor4(ti1,id,Eo);
@@ -1179,132 +608,90 @@ dj1:=m[2];
 ####################
 mid:=inter(s,i1,di1,j1,dj1,Eo);
 	if mid[1]=true then
-		Print("The characteristic is 3.\n");
+		#Print("The characteristic is 3.\n");
 		return mid;
 	else
 		mid:=mid[2];
 	fi;
-#Print("Black box field is constructed.\n");
+#Print("Black box field K is constructed.\n");
 a2:=add(s,mid,i1,j1,k1,di1,di1,Eo);
 	if a2[1]=true then
-		Print("The characteristic is ", 5, ".\n");
+		#Print("The characteristic is ", 5, ".\n");
 		return a2;
 	else
 		a2:=a2[2];
 	fi;
 l:=log2(Eo);;
 nn:=log2((Eo+1)/2);
-##############
-Print("We first treat the field as if it is of type q=1 mod 4.\n");
-##############
-kk:=1;
-finished1:=false;
-finished2:=false;
-	while not finished1 and kk<=7 do
+finished:=false;
+	while not finished do
 		found:=false;
 			while not found do
-				t:=PseudoRandom(ci1);
-					if (t^2=id) and (t<>i1) and (t<>j1) and (t<>k1) then
+				t1:=PseudoRandom(ci1);
+					if ((t1^2=id) and (t1<>i1) and (t1<>j1) and (t1<>k1)) then
 						found:=true;
 					fi;
 			od;
-		Print("Checking whether a random black box field element has multiplicative order divisible by 4.\n");
-		finished2:=false;
-			while not finished2 do
-				uv:=multo(s,mid,i1,j1,k1,di1,t,l,Eo);;
-					if uv[1]=true then
-						return uv;
-					else
-						uv:=uv[2];
-					fi;
-					if uv=di1 then
-						finished2:=true;
-						kk:=kk+1;
-						Print("Unfortunately, 4 does not divide the order of this black box field element.\n");
-					else
-						i:=1;
-							while i<=Ee and (not finished2) do
-								uv:=mult(s,mid,i1,j1,k1,uv,uv,Eo);
-									if uv[1]=true then
-										return uv;
-									else
-										uv:=uv[2];
-									fi;
-									if uv=di1 then
-										finished2:=true;
-										kk:=kk+1;
-										Print("Unfortunately, 4 does not divide the order of this black box field element.\n");
-									else
-										i:=i+1;
-									fi;
-							od;
+		found:=false;
+			while not found do
+				t2:=PseudoRandom(ci1);
+					if (t2<>t1) and (t2^2=id) and (t2<>i1) and (t2<>j1) and (t2<>k1) then
+						found:=true;
 					fi;
 			od;
-	od;
-	if not finished1 then
-		Print("It looks like the black box field is of type q=-1 mod4.\n");
-		kk:=1;
-			while not finished1 and kk<=7 do
-				found:=false;
-					while not found do
-						t1:=PseudoRandom(ci1);
-							if ((t1^2=id) and (t1<>i1) and (t1<>j1) and (t1<>k1)) then
-								found:=true;
-							fi;
-					od;
-				found:=false;
-					while not found do
-						t2:=PseudoRandom(ci1);
-							if (t2<>t1) and (t2^2=id) and (t2<>i1) and (t2<>j1) and (t2<>k1) then
-								found:=true;
-							fi;
-					od;
-				Print("Checking whether -x^2-y^2 is of odd order for random x & y in K^*.\n");
-				tt1:=mult(s,mid,i1,j1,k1,t1,t1,Eo);
-					if tt1[1]=true then
-						return tt1;
+		tt1:=mult(s,mid,i1,j1,k1,t1,t1,Eo);
+			if tt1[1]=true then
+				return tt1;
+			fi;
+		tt2:=mult(s,mid,i1,j1,k1,t2,t2,Eo);
+			if tt2[1]=true then
+				return tt2;
+			fi;
+		tt3:=add(s,mid,i1,j1,k1,tt1[2]^j1,tt2[2]^j1,Eo);
+			if tt3[1]=true then
+				return tt3;
+			fi;
+		#Print("Analysing an element of the form -x^2-y^2 for random x & y in K^*.\n");
+		ss:=multo(s,mid,i1,j1,k1,di1,tt3[2],l,Eo);
+			if ss[1]=true then
+				#Print("Odd power of -x^2-y^2 is already a unipotent element.\n");
+				return ss;
+			elif ss[2]=di1 then
+				#Print("-x^2-y^2 is of odd order. On the way to compute a unipotent element.\n");
+				finished:=true;
+				sqrttt3:=multo(s,mid,i1,j1,k1,di1,tt3[2],nn,Eo);
+					if sqrttt3[1]=true then
+						return sqrttt3;
 					fi;
-				tt2:=mult(s,mid,i1,j1,k1,t2,t2,Eo);
-					if tt2[1]=true then
-						return tt2;
+				x1:=mult(s,mid,i1,j1,k1,t1,sqrttt3[2]^di1,Eo);
+					if x1[1]=true then
+						return x1;
 					fi;
-				tt3:=add(s,mid,i1,j1,k1,tt1[2]^j1,tt2[2]^j1,Eo);
-					if tt3[1]=true then
-						return tt3;
+				x1:=x1[2];
+				x2:=mult(s,mid,i1,j1,k1,t2,sqrttt3[2]^di1,Eo);
+					if x2[1]=true then
+						return x2;
 					fi;
-				ss:=multo(s,mid,i1,j1,k1,di1,tt3[2],l,Eo);
-					if ss[1]=true then
-						return ss;
-					elif ss[2]=di1 then
-						finished1:=true;
-						sqrttt3:=multo(s,mid,i1,j1,k1,di1,tt3[2],nn,Eo);
-							if sqrttt3[1]=true then
-								return sqrttt3;
-							fi;
-						x1:=mult(s,mid,i1,j1,k1,t1,sqrttt3[2]^di1,Eo);
-							if x1[1]=true then
-								return x1;
-							fi;
-						x1:=x1[2];
-						x2:=mult(s,mid,i1,j1,k1,t2,sqrttt3[2]^di1,Eo);
-							if x2[1]=true then
-								return x2;
-							fi;
-						x2:=x2[2]^dj1;
-						candi:=inter(s,i1,x1,k1,x2,Eo);
-							if candi[1]=true then
-		#							Print("Enforced serendipity is accomplished!\n");
-								return candi;
+				x2:=x2[2]^dj1;
+				candi:=inter(s,i1,x1,k1,x2,Eo);
+					if candi[1]=true then
+						#Print("Enforced serendipity is accomplished!\n");
+						return candi;
+					fi;
+			elif mult(s,mid,i1,j1,k1,ss[2],ss[2],Eo)[2] <> di1 then
+				#Print("Will construct an element of order 4 from -x^2-y^2.\n");
+				i:=1;
+					while i<=Ee do
+						ss:=mult(s,mid,i1,j1,k1,ss[2],ss[2],Eo);
+							if ss[1]=true then
+								return ss;
 							else
-								kk:=kk+1;
+								#Print("This is the ", i,"th step.\n");
+								i:=i+1;
 							fi;
-					else
-						kk:=kk+1;
-						Print("No, it is not of odd order.\n");
-					fi;
-			od;
-	fi;
-	if not finished1 then
-		Print("Run the algorithm again, it failed to produce unipotent element.\n");
-	fi;
+					od;
+			else
+				#Print("Its order is of the form 2m, m odd. Will repeat the procedure for different x,y in K.\n");
+			fi;
+	od;	
 end;
