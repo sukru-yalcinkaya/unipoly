@@ -486,7 +486,6 @@ x:=a;
 k:=1;
 	for i in [1..M] do
 			if i in l then
-				#Print("This is for x^",i,".\n");
 				x:=mult(s,mid,i1,j1,k1,x,x,Eo);
 					if x[1]=true then
 						return x;
@@ -509,7 +508,6 @@ k:=1;
 	else
 		y:=ll[1];
 			for f in [2..(k-1)] do
-				#Print("Computing y^",f,".\n");
 				y:=mult(s,mid,i1,j1,k1,y,ll[f],Eo);
 					if y[1]=true then
 						return y;
@@ -528,10 +526,12 @@ end;
 ################################################################################
 ################################################################################
 unipoly:=function(s,E)
-# This function is a combination of the functions "unibbf1" and "unibbf2" above.
-# It first runs unibbf1 and if it succeeds to construct a unipotent element, then
-# we are done. If it fails to construct an element of order 4 in the black box
-# field
+# "s" is a list of generators of G=PGL(2,q), "q" odd, and "E" is an exponent for "G".
+# This function returns a list “l” where
+# l[1] is a truth value whether it succeeds to produce unipotent element.
+# l[2] and l[3] are two involutions whose product is a unipotent element.
+# l[4] is a unipotent element which is the product of l[2] and l[3].
+
 
 local L,i,finished1,Ee,Eo,x,id,i1,ci1,found,count,ti1,j1,cj1,tj1,k1,sc,m,di1,dj1,mid,a2,l,nn,finished,t1,t2,tt1,tt2,tt3,ss,sqrttt3,x1,x2,candi;
 ###############
@@ -595,28 +595,19 @@ finished1:=false;
 			fi;
 	od;
 k1:=i1*j1;
-####################
-#Print("Basis triangle for the projective plane is constructed.\n");
-####################
 sc:=permij(s,i1,j1,Eo);;
 ti1:=eltor4(ti1,id,Eo);
 m:=unity(s,i1,j1,k1,ti1,sc);
 di1:=m[1];
 dj1:=m[2];
-####################
-#Print("Unity elements on the axes are constructed.\n");
-####################
 mid:=inter(s,i1,di1,j1,dj1,Eo);
 	if mid[1]=true then
-		#Print("The characteristic is 3.\n");
 		return mid;
 	else
 		mid:=mid[2];
 	fi;
-#Print("Black box field K is constructed.\n");
 a2:=add(s,mid,i1,j1,k1,di1,di1,Eo);
 	if a2[1]=true then
-		#Print("The characteristic is ", 5, ".\n");
 		return a2;
 	else
 		a2:=a2[2];
@@ -651,13 +642,10 @@ finished:=false;
 			if tt3[1]=true then
 				return tt3;
 			fi;
-		#Print("Analysing an element of the form -x^2-y^2 for random x & y in K^*.\n");
 		ss:=multo(s,mid,i1,j1,k1,di1,tt3[2],l,Eo);
 			if ss[1]=true then
-				#Print("Odd power of -x^2-y^2 is already a unipotent element.\n");
 				return ss;
 			elif ss[2]=di1 then
-				#Print("-x^2-y^2 is of odd order. On the way to compute a unipotent element.\n");
 				finished:=true;
 				sqrttt3:=multo(s,mid,i1,j1,k1,di1,tt3[2],nn,Eo);
 					if sqrttt3[1]=true then
@@ -675,23 +663,19 @@ finished:=false;
 				x2:=x2[2]^dj1;
 				candi:=inter(s,i1,x1,k1,x2,Eo);
 					if candi[1]=true then
-						#Print("Enforced serendipity is accomplished!\n");
 						return candi;
 					fi;
 			elif mult(s,mid,i1,j1,k1,ss[2],ss[2],Eo)[2] <> di1 then
-				#Print("Will construct an element of order 4 from -x^2-y^2.\n");
 				i:=1;
 					while i<=Ee do
 						ss:=mult(s,mid,i1,j1,k1,ss[2],ss[2],Eo);
 							if ss[1]=true then
 								return ss;
 							else
-								#Print("This is the ", i,"th step.\n");
 								i:=i+1;
 							fi;
 					od;
 			else
-				#Print("Its order is of the form 2m, m odd. Will repeat the procedure for different x,y in K.\n");
 			fi;
-	od;	
+	od;
 end;
