@@ -15,7 +15,7 @@ Output: The output has the following format:
 	•	The fourth entry of the list is the unipotent element which is a product of the involutions in the second and third entry.
 
 Demonstration: We demonstrate how our algorithm should be run with the following example.
-
+```
 gap> G:=SO(3,101^2);; S:=GeneratorsOfGroup(G);; exp:=Order(G);;
 gap> u:=unipoly(S,exp);
 [ true, [ [ Z(101^2)^5944, Z(101^2)^5558, Z(101^2)^8301 ], [ Z(101^2)^8668, Z(101^2)^5944, Z(101^2)^4756 ], 
@@ -32,3 +32,4 @@ gap> Order(u[4]);
 101
 gap> u[2]*u[3]=u[4];
 true
+```
