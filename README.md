@@ -1,6 +1,6 @@
 [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/sukru-yalcinkaya/unipoly/master)
 
-Introduction: This GAP code is prepared to construct a unipotent element in the groups SO(3,q)=PGL(2,q), q odd, as explained in the paper “Adjoint representations of black box groups PSL(2,q), q odd”. The GAP code is only slightly varies from the justification presented in the paper which results in a slightly faster algorithm.
+Introduction: This GAP code is prepared to construct a unipotent element in the groups SO(3,q)=PGL(2,q), q odd, as explained in the paper “Adjoint representations of black box groups PSL(2,q), q odd” (https://doi.org/10.1016/j.jalgebra.2018.02.022). The GAP code is only slightly varies from the justification presented in the paper which results in a slightly faster algorithm.
 
 It is important to note that our code treats the input groups as black box groups, that is, it does not use any specific features of the representation of the input group. Also, our code uses GAP as a black box, that is, our code does not use any specific group theoretic features of GAP, the only group theoretic functionality of GAP used is to do group multiplication, taking inverses and checking whether group elements are same. 
 
@@ -11,10 +11,10 @@ We use the order of the group for the exponent of the input group.  As the group
 If one uses very small prime fields like q=5,7,11 etc. unipotent elements appear frequently during random computations and therefore our code can return an answer before it does everything it designed to do so to construct a unipotent element.
 
 Output: The output has the following format:
-	•	It is a list consisting of 4 entries.
-	•	The first entry of the output is a confirmation that a unipotent element is constructed. 
-	•	The second and the third entry of the list are involutions (elements of order 2). 
-	•	The fourth entry of the list is the unipotent element which is a product of the involutions in the second and third entry.
+- It is a list consisting of 4 entries.
+- The first entry of the output is a confirmation that a unipotent element is constructed. 
+- The second and the third entry of the list are involutions (elements of order 2). 
+- The fourth entry of the list is the unipotent element which is a product of the involutions in the second and third entry.
 
 Demonstration: We demonstrate how our algorithm should be run with the following example.
 ```
