@@ -649,7 +649,7 @@ finished:=false;
         return tt3;
       fi;
     ####################
-		Print("Analysing an element of the form -x^2-y^2 for random x & y in K^*.\n");
+    Print("Analysing an element of the form -x^2-y^2 for random x & y in K^*.\n");
     ####################
     ss:=multo(s,mid,i1,j1,k1,di1,tt3[2],l,Eo);
       if ss[1]=true then
