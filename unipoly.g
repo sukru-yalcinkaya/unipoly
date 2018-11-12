@@ -7,22 +7,22 @@ local id,seek,g,finished;
 
 id:=Identity(G);
 seek:=false;
-	while not seek do
-		g:=PseudoRandom(G);
-			if g^Eo=id then
-				seek:=false;
-			else
-				g:=g^Eo;
-				finished:=false;
-					while not finished do
-						if g^2=id then
-							return g;
-						else
-							g:=g^2;
-						fi;
-					od;
-			fi;
-	od;
+    while not seek do
+        g:=PseudoRandom(G);
+            if g^Eo=id then
+                seek:=false;
+            else
+                g:=g^Eo;
+                finished:=false;
+                    while not finished do
+                        if g^2=id then
+                            return g;
+                        else
+                            g:=g^2;
+                        fi;
+                    od;
+            fi;
+    od;
 end;
 ################################################################################
 ################################################################################
