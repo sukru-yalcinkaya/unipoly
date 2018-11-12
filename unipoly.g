@@ -595,6 +595,9 @@ finished1:=false;
       fi;
   od;
 k1:=i1*j1;
+####################
+Print("Basis triangle for the projective plane is constructed.\n");
+####################
 sc:=permij(s,i1,j1,Eo);;
 ti1:=eltor4(ti1,id,Eo);
 m:=unity(s,i1,j1,k1,ti1,sc);
@@ -606,6 +609,9 @@ mid:=inter(s,i1,di1,j1,dj1,Eo);
   else
     mid:=mid[2];
   fi;
+####################  
+Print("Black box field K is constructed.\n");
+####################
 a2:=add(s,mid,i1,j1,k1,di1,di1,Eo);
   if a2[1]=true then
     return a2;
@@ -642,10 +648,19 @@ finished:=false;
       if tt3[1]=true then
         return tt3;
       fi;
+    ####################
+		Print("Analysing an element of the form -x^2-y^2 for random x & y in K^*.\n");
+    ####################
     ss:=multo(s,mid,i1,j1,k1,di1,tt3[2],l,Eo);
       if ss[1]=true then
+        ####################
+        Print("Odd power of -x^2-y^2 is already a unipotent element.\n");
+        ####################
         return ss;
       elif ss[2]=di1 then
+        ####################
+        Print("-x^2-y^2 is of odd order. On the way to compute a unipotent element.\n");
+        ####################
         finished:=true;
         sqrttt3:=multo(s,mid,i1,j1,k1,di1,tt3[2],nn,Eo);
           if sqrttt3[1]=true then
@@ -666,6 +681,9 @@ finished:=false;
             return candi;
           fi;
       elif mult(s,mid,i1,j1,k1,ss[2],ss[2],Eo)[2] <> di1 then
+        ####################
+        Print("Will construct an element of order 4 from -x^2-y^2.\n");
+        ####################
         i:=1;
           while i<=Ee do
             ss:=mult(s,mid,i1,j1,k1,ss[2],ss[2],Eo);
@@ -675,6 +693,10 @@ finished:=false;
                 i:=i+1;
               fi;
           od;
+        else
+          ####################
+          Print("Its order is of the form 2m, m odd. Will repeat the procedure for different x,y in K.\n");
+          ####################
       fi;
   od;
 end;
