@@ -7,22 +7,22 @@ local id,seek,g,finished;
 
 id:=Identity(G);
 seek:=false;
-    while not seek do
-        g:=PseudoRandom(G);
-            if g^Eo=id then
-                seek:=false;
+  while not seek do
+    g:=PseudoRandom(G);
+      if g^Eo=id then
+        seek:=false;
+      else
+        g:=g^Eo;
+        finished:=false;
+          while not finished do
+            if g^2=id then
+              return g;
             else
-                g:=g^Eo;
-                finished:=false;
-                    while not finished do
-                        if g^2=id then
-                            return g;
-                        else
-                            g:=g^2;
-                        fi;
-                    od;
+              g:=g^2;
             fi;
-    od;
+          od;
+      fi;
+  od;
 end;
 ################################################################################
 ################################################################################
@@ -34,13 +34,13 @@ invoeven:=function(g,id)
 local finished;
 
 finished:=false;
-	while not finished do
-			if g^2=id then
-				return g;
-			else
-				g:=g^2;
-			fi;
-	od;
+  while not finished do
+    if g^2=id then
+      return g;
+    else
+      g:=g^2;
+    fi;
+  od;
 end;
 ################################################################################
 ################################################################################
@@ -51,11 +51,11 @@ is4div:=function(g,id,Eo)
 # This function returns the truth value whether the order of "g" is divisible by 4.
 
 g:=g^Eo;
-	if g=id or g^2 = id then
-		return false;
-	else
-		return true;
-	fi;
+  if g=id or g^2 = id then
+    return false;
+  else
+    return true;
+  fi;
 end;
 ################################################################################
 ################################################################################
@@ -69,13 +69,13 @@ local finished;
 
 g:=g^Eo;
 finished:=false;
-	while not finished do
-		if (g <> id) and (g^2 <> id) and (g^4 = id) then
-			return g;
-		else
-			g:=g^2;
-		fi;
-	od;
+  while not finished do
+    if (g <> id) and (g^2 <> id) and (g^4 = id) then
+      return g;
+    else
+      g:=g^2;
+    fi;
+  od;
 end;
 ################################################################################
 ################################################################################
@@ -88,16 +88,16 @@ local i,j,z,g,h,l;
 
 l:=[];
 i:=1;
-   while i <= 20 do
+  while i <= 20 do
     z:=Identity(G);
-       for j in [1..10] do
+      for j in [1..10] do
         g:=PseudoRandom(G);
         h:=PseudoRandom(G);
         z:=g^(-1)*h^(-1)*g*h*z;
-       od;
+      od;
     l[i]:=z;
     i:=i+1;
-   od;
+  od;
 return l;
 end;
 ################################################################################
@@ -112,19 +112,19 @@ local id,l,seek,i,j,x,y,o;
 
 id:=Identity(G);
 l:=[];
-	for i in [1..40] do
-		seek:=false;
-			while not seek do
-				x:=PseudoRandom(G);
-				y:=t*t^x;
-					if y^Eo=id then
-						l[i]:=(y^((Eo+1)/2))*x^(-1);
-						seek:=true;
-					else
-						seek:=false;
-					fi;
-			od;
-	od;
+  for i in [1..40] do
+    seek:=false;
+      while not seek do
+        x:=PseudoRandom(G);
+        y:=t*t^x;
+          if y^Eo=id then
+            l[i]:=(y^((Eo+1)/2))*x^(-1);
+            seek:=true;
+          else
+            seek:=false;
+          fi;
+      od;
+  od;
 return l;
 end;
 ################################################################################
@@ -144,26 +144,26 @@ g1:=i;
 g2:=j;
 g3:=i*j;
 finished:=false;
-	while not finished do
-		g:=PseudoRandom(x);
-		h1:=g1^g;
-		h2:=g2^g;
-		h3:=g3^g;
-			if (g1*h2)^Eo = id then
-				t1:=g1*h2;
-				y1:=t1^((Eo+1)/2);
-				f1:=g3^(g*(y1^-1));
-					if (g2*f1)^Eo = id then
-						finished:=true;
-						z1:=g2*f1;
-						u1:=z1^((Eo+1)/2);
-					else
-						finished:=false;
-					fi;
-			else
-				finished:=false;
-			fi;
-	od;
+  while not finished do
+    g:=PseudoRandom(x);
+    h1:=g1^g;
+    h2:=g2^g;
+    h3:=g3^g;
+      if (g1*h2)^Eo = id then
+        t1:=g1*h2;
+        y1:=t1^((Eo+1)/2);
+        f1:=g3^(g*(y1^-1));
+          if (g2*f1)^Eo = id then
+            finished:=true;
+            z1:=g2*f1;
+            u1:=z1^((Eo+1)/2);
+          else
+            finished:=false;
+          fi;
+      else
+        finished:=false;
+      fi;
+  od;
 return (g*(y1^-1)*(u1^-1))^2;
 end;
 ################################################################################
@@ -182,17 +182,17 @@ id:=Identity(x);
 u:=i*j;
 ci:=Group(cent(i,x,Eo));
 found:=false;
-	while not found do
-		ti:=PseudoRandom(ci);
-			if (ti<>id) and (ti^2<>id) and (ti^3<>id) then
-				found:=true;
-			fi;
-	od;
-	if (u<>u^ti) and ((u*(u^ti)*(u^-1))*((u^ti)^-1)=id) and (u<>id) and (u^2<>id) then
-		return true;
-	else
-		return false;
-	fi;
+  while not found do
+    ti:=PseudoRandom(ci);
+      if (ti<>id) and (ti^2<>id) and (ti^3<>id) then
+        found:=true;
+      fi;
+  od;
+  if (u<>u^ti) and ((u*(u^ti)*(u^-1))*((u^ti)^-1)=id) and (u<>id) and (u^2<>id) then
+    return true;
+  else
+    return false;
+  fi;
 end;
 ################################################################################
 ################################################################################
@@ -210,70 +210,70 @@ local x,id,r,rr,vi,ci,l,count,g,R,T,ll,r1,r2,r3,t1,t2,t3,g2,h2,hh2,z2,dill,found
 # We first check for unipotency. If fails, then we start the procedure to
 # construct desired involution.
 #########
-	if unipotency(s,i,j,Eo) then
-		return [true,i,j,i*j];
-	else
-		x:=Group(s);
-		id:=Identity(x);
-		r:=i*j;
-		rr:=r^Eo;
-			if r^Eo <> id then
-				return [false, invoeven(rr,id)];
-			else
-				vi:=cent(i,x,Eo);
-				ci:=Group(vi);
-				l:=[];
-				count:=1;
-					while count <= 20 do
-						g:=PseudoRandom(ci);
-							if (g <> id) and (g^2 <> id) and (g^3 <> id) then
-								l[count]:=g;
-								count:=count+1;
-							fi;
-					od;
-				R:=Group(r);
-				T:=Group(l);
-				ll:=[];
+  if unipotency(s,i,j,Eo) then
+    return [true,i,j,i*j];
+  else
+    x:=Group(s);
+    id:=Identity(x);
+    r:=i*j;
+    rr:=r^Eo;
+      if r^Eo <> id then
+        return [false, invoeven(rr,id)];
+      else
+        vi:=cent(i,x,Eo);
+        ci:=Group(vi);
+        l:=[];
+        count:=1;
+          while count <= 20 do
+            g:=PseudoRandom(ci);
+              if (g <> id) and (g^2 <> id) and (g^3 <> id) then
+                l[count]:=g;
+                count:=count+1;
+              fi;
+          od;
+        R:=Group(r);
+        T:=Group(l);
+        ll:=[];
 ########
 # For the construction of the centralizer of the desired involution, we use
 # the word ”w1*z1*w2*z2*w3*z3” where z1, z2, z3 are elements from the group
 # R and w1, w2, w3 are elements from the group T.
 ########
-					for k in [1..50] do
-						r1:=PseudoRandom(R);
-						r2:=PseudoRandom(R);
-						r3:=PseudoRandom(R);
-						t1:=PseudoRandom(T);
-						t2:=PseudoRandom(T);
-						t3:=PseudoRandom(T);
-						g2:=r1*t1*r2*t2*r3*t3;
-						h2:=(r1*(t1^-1)*r2*(t2^-1)*r3*(t3^-1))*((t3^-1)*(r3^-1)*(t2^-1)*(r2^-1)*(t1^-1)*(r1^-1));
-						hh2:=h2^Eo;
-							if hh2 = id then
-								z2:=(h2^((Eo+1)/2))*g2;
-							else
-								z2:=invoeven(hh2,id);
-							fi;
-						ll[k]:=z2;
-					od;
-				dill:=Group(ll);
+          for k in [1..50] do
+            r1:=PseudoRandom(R);
+            r2:=PseudoRandom(R);
+            r3:=PseudoRandom(R);
+            t1:=PseudoRandom(T);
+            t2:=PseudoRandom(T);
+            t3:=PseudoRandom(T);
+            g2:=r1*t1*r2*t2*r3*t3;
+            h2:=(r1*(t1^-1)*r2*(t2^-1)*r3*(t3^-1))*((t3^-1)*(r3^-1)*(t2^-1)*(r2^-1)*(t1^-1)*(r1^-1));
+            hh2:=h2^Eo;
+              if hh2 = id then
+                z2:=(h2^((Eo+1)/2))*g2;
+              else
+                z2:=invoeven(hh2,id);
+              fi;
+            ll[k]:=z2;
+          od;
+        dill:=Group(ll);
 #######
 # Now, we try to locate the central involution in the centre of the centralizer
 # of the desired involution.
 #######
-				found:=false;
-					while not found do
-						g:=PseudoRandom(dill);
-						gg:=g^Eo;
-							if (gg <> id) and (g <> id) and (g^2 <> id) and (g^3 <> id) then
-								g:=invoeven(gg,id);
-									if (g*i=i*g) and (g*j=j*g) then
-										return [false,g];
-									fi;
-							fi;
-					od;
-			fi;
-	fi;
+        found:=false;
+          while not found do
+            g:=PseudoRandom(dill);
+            gg:=g^Eo;
+              if (gg <> id) and (g <> id) and (g^2 <> id) and (g^3 <> id) then
+                g:=invoeven(gg,id);
+                  if (g*i=i*g) and (g*j=j*g) then
+                    return [false,g];
+                  fi;
+              fi;
+          od;
+      fi;
+  fi;
 end;
 ################################################################################
 ################################################################################
@@ -288,13 +288,13 @@ inter:=function(s,i1,i2,j1,j2,Eo)
 local z1,z2;
 
 z1:=reif(s,i1,i2,Eo);
-if z1[1]=true then
-   return z1;
-fi;
+  if z1[1]=true then
+    return z1;
+  fi;
 z2:=reif(s,j1,j2,Eo);
-if z2[1]=true then
-   return z2;
-fi;
+  if z2[1]=true then
+    return z2;
+  fi;
 return reif(s,z1[2],z2[2],Eo);
 end;
 ################################################################################
@@ -321,34 +321,34 @@ llk:=[];
 i:=1;
 j:=1;
 k:=1;
-	for g in N do
-		if (g <> id) and (g^2 = id) and (j1^g=k1) then
-			lli[i]:=g;
-			i:=i+1;
-		fi;
-	od;
-	for g in N do
-		if (g <> id) and (g^2 = id) and (i1^g=k1) then
-			llj[j]:=g;
-			j:=j+1;
-		fi;
-	od;
-	for g in N do
-		if (g <> id) and (g^2 = id) and (i1^g=j1) then
-			llk[k]:=g;
-			k:=k+1;
-		fi;
-	od;
+  for g in N do
+    if (g <> id) and (g^2 = id) and (j1^g=k1) then
+      lli[i]:=g;
+      i:=i+1;
+    fi;
+  od;
+  for g in N do
+    if (g <> id) and (g^2 = id) and (i1^g=k1) then
+      llj[j]:=g;
+        j:=j+1;
+    fi;
+  od;
+  for g in N do
+    if (g <> id) and (g^2 = id) and (i1^g=j1) then
+      llk[k]:=g;
+      k:=k+1;
+    fi;
+  od;
 found:=false;
-	for gi in lli do
-		for gj in llj do
-			for gk in llk do
-				if gk^gj=gi and gi^sc=gj and gi^(sc^2)=gk then
-					return [gi,gj,gk];
-				fi;
-			od;
-		od;
-	od;
+  for gi in lli do
+    for gj in llj do
+      for gk in llk do
+        if gk^gj=gi and gi^sc=gj and gi^(sc^2)=gk then
+          return [gi,gj,gk];
+        fi;
+      od;
+    od;
+  od;
 end;
 ################################################################################
 ################################################################################
@@ -366,23 +366,23 @@ add:=function(s,mid,i1,j1,k1,a,b,Eo)
 local aprime,bprime,ab,se;
 
 aprime:=inter(s,i1,a,mid,k1,Eo);
-	if aprime[1]=true then
-		return aprime;
-	fi;
+  if aprime[1]=true then
+    return aprime;
+  fi;
 se:=inter(s,mid,k1,i1,j1,Eo);
-	if se[1]=true then
-		return se;
-	fi;
+  if se[1]=true then
+    return se;
+  fi;
 bprime:=inter(s,i1,k1,b,se[2],Eo);
-	if bprime[1]=true then
-		return bprime;
-	fi;
+  if bprime[1]=true then
+    return bprime;
+  fi;
 ab:=inter(s,j1,k1,aprime[2],bprime[2],Eo);
-	if ab[1]=true then
-		return ab;
-	else
-		return ab;
-	fi;
+  if ab[1]=true then
+    return ab;
+  else
+    return ab;
+  fi;
 end;
 ################################################################################
 ################################################################################
@@ -400,13 +400,13 @@ mult:=function(s,mid,i1,j1,k1,a,b,Eo)
 local aprime,bprime,ab;
 
 aprime:=inter(s,i1,a,j1,mid,Eo);
-	if aprime[1]=true then
-		return aprime;
-	fi;
+  if aprime[1]=true then
+    return aprime;
+  fi;
 bprime:=inter(s,b,mid,i1,k1,Eo);
-	if bprime[1]=true then
-		return bprime;
-	fi;
+  if bprime[1]=true then
+    return bprime;
+  fi;
 ab:=inter(s,aprime[2],bprime[2],j1,k1,Eo);
 return ab;
 end;
@@ -422,41 +422,41 @@ l:=[];
 stop:=false;
 finished:=false;
 i:=0;
-	while not stop do
-		if 2^i=n then
-			stop:=true;
-			finished:=true;
-		elif  2^i > n then
-			stop:=true;
-			i:=i-1;
-		else
-			i:=i+1;
-		fi;
-	od;
+  while not stop do
+    if 2^i=n then
+      stop:=true;
+      finished:=true;
+    elif  2^i > n then
+      stop:=true;
+      i:=i-1;
+    else
+      i:=i+1;
+    fi;
+  od;
 l[1]:=i;
 n:=n-2^i;
 k:=2;
-	while not finished do
-		stop:=false;
-		j:=1;
-			while not stop do
-				a:=2^(i-j);
-					if a = n then
-						stop:=true;
-						finished:=true;
-						l[k]:=i-j;
-					elif a > n then
-						stop:=false;
-						j:=j+1;
-					else
-						stop:=true;
-						l[k]:=i-j;
-						i:=i-j;
-						k:=k+1;
-						n:=n-a;
-					fi;
-			od;
-	od;
+  while not finished do
+    stop:=false;
+    j:=1;
+      while not stop do
+        a:=2^(i-j);
+          if a = n then
+            stop:=true;
+            finished:=true;
+            l[k]:=i-j;
+          elif a > n then
+            stop:=false;
+            j:=j+1;
+          else
+            stop:=true;
+            l[k]:=i-j;
+            i:=i-j;
+            k:=k+1;
+            n:=n-a;
+          fi;
+      od;
+  od;
 return l;
 end;
 ################################################################################
@@ -476,51 +476,51 @@ multo:=function(s,mid,i1,j1,k1,di1,a,l,Eo)
 local M,0in,x,k,i,y,f,ll;
 
 M:=Maximum(l);
-	if 0 in l then
-		0in:=true;
-	else
-		0in:=false;
-	fi;
+  if 0 in l then
+    0in:=true;
+  else
+    0in:=false;
+  fi;
 ll:=[];
 x:=a;
 k:=1;
-	for i in [1..M] do
-			if i in l then
-				x:=mult(s,mid,i1,j1,k1,x,x,Eo);
-					if x[1]=true then
-						return x;
-					else
-						x:=x[2];
-					fi;
-				ll[k]:=x;
-				k:=k+1;
-			else
-				x:=mult(s,mid,i1,j1,k1,x,x,Eo);
-					if x[1]=true then
-						return x;
-					else
-						x:=x[2];
-					fi;
-			fi;
-	od;
-	if Length(ll)=0 then
-		return di1;
-	else
-		y:=ll[1];
-			for f in [2..(k-1)] do
-				y:=mult(s,mid,i1,j1,k1,y,ll[f],Eo);
-					if y[1]=true then
-						return y;
-					else
-						y:=y[2];
-					fi;
-			od;
-	fi;
-	if 0in=true then
-		return mult(s,mid,i1,j1,k1,y,a,Eo);
-	else
-		return [false,y];
-	fi;
+  for i in [1..M] do
+    if i in l then
+      x:=mult(s,mid,i1,j1,k1,x,x,Eo);
+        if x[1]=true then
+          return x;
+        else
+          x:=x[2];
+        fi;
+      ll[k]:=x;
+      k:=k+1;
+    else
+      x:=mult(s,mid,i1,j1,k1,x,x,Eo);
+        if x[1]=true then
+          return x;
+        else
+          x:=x[2];
+        fi;
+    fi;
+  od;
+  if Length(ll)=0 then
+    return di1;
+  else
+    y:=ll[1];
+      for f in [2..(k-1)] do
+        y:=mult(s,mid,i1,j1,k1,y,ll[f],Eo);
+          if y[1]=true then
+            return y;
+          else
+            y:=y[2];
+          fi;
+      od;
+  fi;
+  if 0in=true then
+    return mult(s,mid,i1,j1,k1,y,a,Eo);
+  else
+    return [false,y];
+  fi;
 end;
 ################################################################################
 ################################################################################
@@ -540,14 +540,14 @@ local L,i,finished1,Ee,Eo,x,id,i1,ci1,found,count,ti1,j1,cj1,tj1,k1,sc,m,di1,dj1
 L:=E;
 i:=0;
 finished1:=false;
-	while not finished1 do
-		if L mod 2 = 0 then
-			L:=L/2;
-			i:=i+1;
-		else
-			finished1:=true;
-		fi;
-	od;
+  while not finished1 do
+    if L mod 2 = 0 then
+      L:=L/2;
+      i:=i+1;
+    else
+      finished1:=true;
+    fi;
+  od;
 Ee:=i;
 Eo:=E/(2^Ee);
 ##############
@@ -559,41 +559,41 @@ Eo:=E/(2^Ee);
 x:=Group(s);
 id:=Identity(x);
 finished1:=false;
-	while not finished1 do
-		i1:=invo(x,Eo);
-		ci1:=Group(cent(i1,x,Eo));
-		found:=false;
-		count:=1;
-			while (not found) and (count<=20) do
-				ti1:=PseudoRandom(ci1);
-					if is4div(ti1,id,Eo) then
-						found:=true;
-						finished1:=true;
-					else
-						count:=count+1;
-					fi;
-			od;
-	od;
+  while not finished1 do
+    i1:=invo(x,Eo);
+    ci1:=Group(cent(i1,x,Eo));
+    found:=false;
+    count:=1;
+      while (not found) and (count<=20) do
+        ti1:=PseudoRandom(ci1);
+          if is4div(ti1,id,Eo) then
+            found:=true;
+            finished1:=true;
+          else
+            count:=count+1;
+          fi;
+      od;
+  od;
 finished1:=false;
-	while not finished1 do
-		j1:=invo(ci1,Eo);
-			if j1<>i1 then
-				cj1:=Group(cent(j1,x,Eo));
-				found:=false;
-				count:=1;
-					while (not found) and (count <=20) do
-						tj1:=PseudoRandom(cj1);
-							if is4div(tj1,id,Eo) then
-								found:=true;
-								finished1:=true;
-							else
-								count:=count+1;
-							fi;
-					od;
-			else
-				finished1:=false;
-			fi;
-	od;
+  while not finished1 do
+    j1:=invo(ci1,Eo);
+      if j1<>i1 then
+        cj1:=Group(cent(j1,x,Eo));
+        found:=false;
+        count:=1;
+          while (not found) and (count <=20) do
+            tj1:=PseudoRandom(cj1);
+              if is4div(tj1,id,Eo) then
+                found:=true;
+                finished1:=true;
+              else
+                count:=count+1;
+              fi;
+          od;
+      else
+        finished1:=false;
+      fi;
+  od;
 k1:=i1*j1;
 sc:=permij(s,i1,j1,Eo);;
 ti1:=eltor4(ti1,id,Eo);
@@ -601,81 +601,80 @@ m:=unity(s,i1,j1,k1,ti1,sc);
 di1:=m[1];
 dj1:=m[2];
 mid:=inter(s,i1,di1,j1,dj1,Eo);
-	if mid[1]=true then
-		return mid;
-	else
-		mid:=mid[2];
-	fi;
+  if mid[1]=true then
+    return mid;
+  else
+    mid:=mid[2];
+  fi;
 a2:=add(s,mid,i1,j1,k1,di1,di1,Eo);
-	if a2[1]=true then
-		return a2;
-	else
-		a2:=a2[2];
-	fi;
+  if a2[1]=true then
+    return a2;
+  else
+    a2:=a2[2];
+  fi;
 l:=log2(Eo);;
 nn:=log2((Eo+1)/2);
 finished:=false;
-	while not finished do
-		found:=false;
-			while not found do
-				t1:=PseudoRandom(ci1);
-					if ((t1^2=id) and (t1<>i1) and (t1<>j1) and (t1<>k1)) then
-						found:=true;
-					fi;
-			od;
-		found:=false;
-			while not found do
-				t2:=PseudoRandom(ci1);
-					if (t2<>t1) and (t2^2=id) and (t2<>i1) and (t2<>j1) and (t2<>k1) then
-						found:=true;
-					fi;
-			od;
-		tt1:=mult(s,mid,i1,j1,k1,t1,t1,Eo);
-			if tt1[1]=true then
-				return tt1;
-			fi;
-		tt2:=mult(s,mid,i1,j1,k1,t2,t2,Eo);
-			if tt2[1]=true then
-				return tt2;
-			fi;
-		tt3:=add(s,mid,i1,j1,k1,tt1[2]^j1,tt2[2]^j1,Eo);
-			if tt3[1]=true then
-				return tt3;
-			fi;
-		ss:=multo(s,mid,i1,j1,k1,di1,tt3[2],l,Eo);
-			if ss[1]=true then
-				return ss;
-			elif ss[2]=di1 then
-				finished:=true;
-				sqrttt3:=multo(s,mid,i1,j1,k1,di1,tt3[2],nn,Eo);
-					if sqrttt3[1]=true then
-						return sqrttt3;
-					fi;
-				x1:=mult(s,mid,i1,j1,k1,t1,sqrttt3[2]^di1,Eo);
-					if x1[1]=true then
-						return x1;
-					fi;
-				x1:=x1[2];
-				x2:=mult(s,mid,i1,j1,k1,t2,sqrttt3[2]^di1,Eo);
-					if x2[1]=true then
-						return x2;
-					fi;
-				x2:=x2[2]^dj1;
-				candi:=inter(s,i1,x1,k1,x2,Eo);
-					if candi[1]=true then
-						return candi;
-					fi;
-			elif mult(s,mid,i1,j1,k1,ss[2],ss[2],Eo)[2] <> di1 then
-				i:=1;
-					while i<=Ee do
-						ss:=mult(s,mid,i1,j1,k1,ss[2],ss[2],Eo);
-							if ss[1]=true then
-								return ss;
-							else
-								i:=i+1;
-							fi;
-					od;
-			else
-			fi;
-	od;
+  while not finished do
+    found:=false;
+      while not found do
+        t1:=PseudoRandom(ci1);
+          if ((t1^2=id) and (t1<>i1) and (t1<>j1) and (t1<>k1)) then
+            found:=true;
+          fi;
+      od;
+    found:=false;
+      while not found do
+        t2:=PseudoRandom(ci1);
+          if (t2<>t1) and (t2^2=id) and (t2<>i1) and (t2<>j1) and (t2<>k1) then
+            found:=true;
+          fi;
+      od;
+    tt1:=mult(s,mid,i1,j1,k1,t1,t1,Eo);
+      if tt1[1]=true then
+        return tt1;
+      fi;
+    tt2:=mult(s,mid,i1,j1,k1,t2,t2,Eo);
+      if tt2[1]=true then
+        return tt2;
+      fi;
+    tt3:=add(s,mid,i1,j1,k1,tt1[2]^j1,tt2[2]^j1,Eo);
+      if tt3[1]=true then
+        return tt3;
+      fi;
+    ss:=multo(s,mid,i1,j1,k1,di1,tt3[2],l,Eo);
+      if ss[1]=true then
+        return ss;
+      elif ss[2]=di1 then
+        finished:=true;
+        sqrttt3:=multo(s,mid,i1,j1,k1,di1,tt3[2],nn,Eo);
+          if sqrttt3[1]=true then
+            return sqrttt3;
+          fi;
+        x1:=mult(s,mid,i1,j1,k1,t1,sqrttt3[2]^di1,Eo);
+          if x1[1]=true then
+            return x1;
+          fi;
+        x1:=x1[2];
+        x2:=mult(s,mid,i1,j1,k1,t2,sqrttt3[2]^di1,Eo);
+          if x2[1]=true then
+            return x2;
+          fi;
+        x2:=x2[2]^dj1;
+        candi:=inter(s,i1,x1,k1,x2,Eo);
+          if candi[1]=true then
+            return candi;
+          fi;
+      elif mult(s,mid,i1,j1,k1,ss[2],ss[2],Eo)[2] <> di1 then
+        i:=1;
+          while i<=Ee do
+            ss:=mult(s,mid,i1,j1,k1,ss[2],ss[2],Eo);
+              if ss[1]=true then
+                return ss;
+              else
+                i:=i+1;
+              fi;
+          od;
+      fi;
+  od;
 end;
