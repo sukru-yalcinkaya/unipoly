@@ -11,3 +11,6 @@ coverage:
 comment:
   layout: "header, diff, changes, tree"
   behavior: default
+
+ignore:
+  - "tst/*"     # ignore test harness code
