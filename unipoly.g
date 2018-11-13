@@ -682,7 +682,7 @@ finished:=false;
           fi;
       elif mult(s,mid,i1,j1,k1,ss[2],ss[2],Eo)[2] <> di1 then
         ####################
-        Print("Will construct an element of order 4 from -x^2-y^2.\n");
+        Print("Constructing an element of order 4 from -x^2-y^2 which will be a unipotent element.\n");
         ####################
         i:=1;
           while i<=Ee do
@@ -695,7 +695,7 @@ finished:=false;
           od;
         else
           ####################
-          Print("Its order is of the form 2m, m odd. Will repeat the procedure for different x,y in K.\n");
+          Print("Its order is of the form 2m, m odd. Now, repeating the procedure for different x,y in K.\n");
           ####################
       fi;
   od;
