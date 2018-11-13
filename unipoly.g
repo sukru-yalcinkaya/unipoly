@@ -1,3 +1,6 @@
+InfoUnipoly := NewInfoClass("InfoUnipoly");
+SetInfoLevel(InfoUnipoly,1);
+
 invo:=function(G,Eo)
 # returns an involution produced from a random element in the group G.
 # We assume that the distribution of the elements of even order in the group G
@@ -596,7 +599,7 @@ finished1:=false;
   od;
 k1:=i1*j1;
 ####################
-Print("Basis triangle for the projective plane is constructed.\n");
+Info(InfoUnipoly,1,"Basis triangle for the projective plane is constructed.");
 ####################
 sc:=permij(s,i1,j1,Eo);;
 ti1:=eltor4(ti1,id,Eo);
@@ -610,7 +613,7 @@ mid:=inter(s,i1,di1,j1,dj1,Eo);
     mid:=mid[2];
   fi;
 ####################  
-Print("Black box field K is constructed.\n");
+Info(InfoUnipoly,1,"Black box field K is constructed.");
 ####################
 a2:=add(s,mid,i1,j1,k1,di1,di1,Eo);
   if a2[1]=true then
@@ -649,17 +652,17 @@ finished:=false;
         return tt3;
       fi;
     ####################
-    Print("Analysing an element of the form -x^2-y^2 for random x & y in K^*.\n");
+    Info(InfoUnipoly,1,"Analysing an element of the form -x^2-y^2 for random x & y in K^*.");
     ####################
     ss:=multo(s,mid,i1,j1,k1,di1,tt3[2],l,Eo);
       if ss[1]=true then
         ####################
-        Print("Odd power of -x^2-y^2 is already a unipotent element.\n");
+        Info(InfoUnipoly,1,"Odd power of -x^2-y^2 is already a unipotent element.");
         ####################
         return ss;
       elif ss[2]=di1 then
         ####################
-        Print("-x^2-y^2 is of odd order. On the way to compute a unipotent element.\n");
+        Info(InfoUnipoly,1,"-x^2-y^2 is of odd order. On the way to compute a unipotent element.");
         ####################
         finished:=true;
         sqrttt3:=multo(s,mid,i1,j1,k1,di1,tt3[2],nn,Eo);
@@ -682,7 +685,7 @@ finished:=false;
           fi;
       elif mult(s,mid,i1,j1,k1,ss[2],ss[2],Eo)[2] <> di1 then
         ####################
-        Print("Constructing an element of order 4 from -x^2-y^2 which will be a unipotent element.\n");
+        Info(InfoUnipoly,1,"Constructing an element of order 4 from -x^2-y^2 which will be a unipotent element.");
         ####################
         i:=1;
           while i<=Ee do
@@ -695,7 +698,7 @@ finished:=false;
           od;
         else
           ####################
-          Print("Its order is of the form 2m, m odd. Now, repeating the procedure for different x,y in K.\n");
+          Info(InfoUnipoly,1,"Its order is of the form 2m, m odd. Now, repeating the procedure for different x,y in K.");
           ####################
       fi;
   od;
