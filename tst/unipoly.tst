@@ -9,6 +9,8 @@
 #
 # First, a single example
 #
+gap> INFO_UUU:=InfoLevel(InfoUnipoly);;
+gap> SetInfoLevel(InfoUnipoly,0);
 gap> G:=SO(3,17^2); S:=GeneratorsOfGroup(G);; exp:=Order(G);
 SO(0,3,289)
 24137280
@@ -83,5 +85,6 @@ gap> unipolytest(17,1);
 true
 gap> unipolytest(17,2);
 true
+gap> SetInfoLevel(InfoUnipoly,INFO_UUU);
 
 # that's all!
