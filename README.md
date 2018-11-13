@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/sukru-yalcinkaya/unipoly.svg?branch=master)](https://travis-ci.org/sukru-yalcinkaya/unipoly)
+[![Code Coverage](https://codecov.io/github/sukru-yalcinkaya/unipoly/coverage.svg?branch=master&token=)](https://codecov.io/gh/sukru-yalcinkaya/unipoly)
 [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/sukru-yalcinkaya/unipoly/master)
 
 Introduction: This GAP code is prepared to construct a unipotent element in the groups SO(3,q)=PGL(2,q), q odd, as explained in the paper “Adjoint representations of black box groups PSL(2,q), q odd” (https://doi.org/10.1016/j.jalgebra.2018.02.022). The GAP code is only slightly varies from the justification presented in the paper which results in a slightly faster algorithm.
